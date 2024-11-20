@@ -1,3 +1,5 @@
+import pickle
+
 class Cliente:
 
     def __init__(self,dni:int,nomyape:str,fecha_nacimiento:str):
@@ -30,13 +32,18 @@ class gestorCliente:
         elif dni in self.lista_dni:
             print ("ERROR : Ya hay un usuario registrado con ese numero de documento")
             return False
+        elif len(str(dni))!=8:
+            print("ERROR : El DNI debe contener 8 numeros")
         else:
             return True
         
 
-    def validar_cliente(self, cliente):
-        if cliente.isnumeric():
-            print("ERROR : El nombre y apellido no pueden ser numeros")
+    def validar_cliente(self, nombre, apellido):
+
+        cliente = nombre+apellido
+
+        if not cliente.isalpha():
+            print("ERROR : El nombre y apellido solo pueden contener letras")
             return False
         elif len(cliente) > 50:
             print ("ERROR : El nombre del cliente no debe pasar los 50 caracteres")
@@ -82,11 +89,11 @@ class gestorCliente:
             print("El año debe ser un numero entero")
             return False
 
-        if 0>anio:
-            print ("ERROR : El año del fecha debe ser mayor a 0")
+        if anio<1900:
+            print ("ERROR : El año debe estar por encima de 1900")
             return False
-        elif len(str(anio))<4:
-            print ("ERROR : El año debe llevar 4 numeros")
+        elif len(str(anio))>4:
+            print("ERROR : Solo puede contener 4 digitos")
             return False
         else:
             return True
@@ -96,49 +103,32 @@ class gestorCliente:
 
     def crear_cliente(self, dni, cliente, fecha_nacimiento):
             self.lista_clientes.append(Cliente(dni,cliente,fecha_nacimiento))
+            self.lista_dni.append(dni)
             print("Cliente creado exitosamente")
 
     def mostrar_clientes(self):
+        cont=1
         for cliente in self.lista_clientes:
-            print(cliente)
+            print(f"{cont} : {cliente}")
+            cont+=1
 
     def modificar_cliente(self, index, dni, cliente, fecha_nacimiento):
-        self.modificar_clientes()
 
-        while True:
-            dni = input("Ingrese el dni del cliente que desea modificar: ")
+            self.lista_clientes[index].dni = dni
+            self.lista_clientes[index].cliente = cliente
+            self.lista_clientes[index].fecha_nacimiento = fecha_nacimiento
 
-            if dni not in [self.lista_dni]:
-                print("El DNI debe pertenecer a un cliente")
-            else:
-                break
-            
-        dni_nuevo = input("Ingrese el nuevo DNI: ")
-        cliente_nuevo = input("Ingrese el nuevo nombre y apellido: ")
+            print("Cliente modificar exitosamente")
 
-        print("Ingrese la fecha de nacimiento (DD/MM/AAAA)")
-        print()
+    def eliminar_cliente(self, index):
+        self.lista_clientes.pop(index)
+        print("Cliente eliminado exitosamente")
+    
 
-        while True:
-            dia = input("Ingrese el dia: ")
-            if self.validar_dia(dia):
-                break
-
-
-        while True:
-            mes = input(f"Ingrese el mes ({dia}/MM/AAAA) :      ")
-            if self.valiar_mes(mes):
-                break
-
-
-        while True:
-            anio = input(f"Ingrese el año ({dia}/{mes}/AAAA) :        ")
-            if self.validar_anio(anio):
-                self.crear_cliente(dni, nombreyapellido, f"{dia}/{mes}/{anio}")
-                break
+######################### SINCRONIZACION CON BINARIO #############################
         
 
+    def sincronizar_binario(self, contenido)
 
-        
-        
-
+        with open("clientes.bin", "w+b") as archivo:
+            archivo.write(pickle.dump(self.lista_clientes))

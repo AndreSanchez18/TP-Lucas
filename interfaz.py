@@ -23,8 +23,11 @@ def main():
 
                         
                     while True:
-                        nombreyapellido = input("Ingrese el nombre y apellido: ")
-                        if gestor.validar_cliente(nombreyapellido):
+                        print("Ingresa los siguientes datos identificativos basicos: ")
+                        nombre = input("Nombre: ")
+                        apellido = input("Apellido: ")
+
+                        if gestor.validar_cliente(nombre, apellido):
                             break
 
                                    
@@ -38,24 +41,23 @@ def main():
 
 
                     while True:
-                        mes = input(f"Ingrese el mes ({dia}/MM/AAAA) :      ")
+                        mes = input(f"Ingrese el mes ({dia}/MM/AAAA): ")
                         if gestor.valiar_mes(mes):
                             break
 
 
                     while True:
-                        anio = input(f"Ingrese el año ({dia}/{mes}/AAAA) :        ")
+                        anio = input(f"Ingrese el año ({dia}/{mes}/AAAA): ")
                         if gestor.validar_anio(anio):
-                            gestor.crear_cliente(index-1,dni, nombreyapellido, f"{dia}/{mes}/{anio}")
+                            cliente = f"{nombre} {apellido}"
+                            gestor.crear_cliente(dni, cliente, f"{dia}/{mes}/{anio}")
                             break
                              
 
                 elif opcion == "2":
                     gestor.mostrar_clientes()
                 elif opcion == "3":
-                    cont = 0
-                    for cliente in gestor.lista_clientes:
-                        print(f"{cont+1} : {cliente}")
+                    gestor.mostrar_clientes()
 
                     while True:
                         try:
@@ -76,8 +78,9 @@ def main():
                             break
 
                     while True:
-                        cliente_nuevo = input("Ingrese el nuevo nombre y apellido del cliente: ")
-                        if gestor.validar_cliente(cliente_nuevo):
+                        nombre_nuevo = input("Ingrese el nuevo nombre: ")
+                        apellido_nuevo = input("Ingrese el nuevo apellido: ")
+                        if gestor.validar_cliente(nombre_nuevo, apellido_nuevo):
                             break
                     
                     print("Ingrese la nueva fecha de nacimiento")
@@ -95,13 +98,36 @@ def main():
                     while True:
                         anio_nuevo = input("Año: ")
                         if gestor.validar_anio(anio_nuevo):
+                            fecha_nacimiento_nueva = f"{dia_nuevo}/{mes_nuevo}/{anio_nuevo}"
+                            cliente_nuevo = f"{nombre_nuevo} {apellido_nuevo}"
+                            gestor.modificar_cliente(index-1,dni_nuevo, cliente_nuevo, fecha_nacimiento_nueva)
                             break
 
-                    gestor.modificar_cliente(dni_nuevo, cliente_nuevo, f"{dia_nuevo}/{mes_nuevo}/{anio_nuevo}")
-
-                        
                 elif opcion == "4":
-                    cliente.eliminar_cliente()
+                    gestor.mostrar_clientes()
+
+                    while True:
+                        try:
+                            index = int(input("Ingrese el usuario que desea modificar: "))
+                            break
+                        except ValueError:
+                            print("ERROR : Debes ingresar un numero")
+
+                    while True:
+                        if index-1 > len(gestor.lista_clientes):
+                            print("ERROR : Debes ingresar un indice de los clientes registrados")
+                        else:
+                            break
+
+                    confirmacion = input("¿Estas seguro de continuar con la eliminacion? (S/N): " ) 
+                    while confirmacion.lower() not in ["s", "n"]:
+                        confirmacion = input("Elige entre S/N : ")
+
+                    if confirmacion=="s":
+                        gestor.eliminar_cliente(index-1)
+                    else:
+                        print("Eliminacion cancelada")
+
                 elif opcion == "5":
                     break
                 else:
