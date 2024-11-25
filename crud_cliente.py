@@ -2,7 +2,7 @@ import pickle
 
 class Cliente:
 
-    def __init__(self,dni:int,nomyape:str,fecha_nacimiento:str):
+    def __init__(self, dni:int,nomyape:str,fecha_nacimiento:str):
         self.dni = dni
         self.cliente = nomyape
         self.fecha_nacimiento = fecha_nacimiento
@@ -14,10 +14,10 @@ class Cliente:
 class gestorCliente:
 
     lista_clientes = []
-    lista_dni = []
 
 
 ########################## VALIDACIONES ################################ 
+
     def validar_dni(self,dni):
 
         try:
@@ -25,12 +25,14 @@ class gestorCliente:
         except ValueError:
             print("ERROR : EL numero de documento debe ser un entero")
             return False
+
+        for usuario in self.lista_clientes:
+            if str(dni) == usuario.dni:
+                print ("ERROR : Ya hay un usuario registrado con ese numero de documento")
+                return False
             
         if dni <= 0:
             print ("ERROR : El numero de documento no puede ser negativo")
-            return False
-        elif dni in self.lista_dni:
-            print ("ERROR : Ya hay un usuario registrado con ese numero de documento")
             return False
         elif len(str(dni))!=8:
             print("ERROR : El DNI debe contener 8 numeros")
@@ -98,19 +100,30 @@ class gestorCliente:
         else:
             return True
         
+    def validar_indice (self, idx):
 
+        try:
+            index = int(idx)
+        except ValueError:
+            print("ERROR : Debes ingresar un numero")
+            return False
+        
+        if 0>index or index > len(self.lista_clientes)-1:
+            print("ERROR : Debes ingresar un usuario existente")
+            return False
+        return True
+
+    
 ###################### CRUD CLIENTE ###############################
 
     def crear_cliente(self, dni, cliente, fecha_nacimiento):
             self.lista_clientes.append(Cliente(dni,cliente,fecha_nacimiento))
-            self.lista_dni.append(dni)
             print("Cliente creado exitosamente")
 
     def mostrar_clientes(self):
-        cont=1
-        for cliente in self.lista_clientes:
-            print(f"{cont} : {cliente}")
-            cont+=1
+        print()
+        for idx, c in enumerate(self.lista_clientes):
+            print(f"{idx} : {c}")
 
     def modificar_cliente(self, index, dni, cliente, fecha_nacimiento):
 
@@ -128,7 +141,18 @@ class gestorCliente:
 ######################### SINCRONIZACION CON BINARIO #############################
         
 
-    def sincronizar_binario(self, contenido)
+    def sincronizar_binario(self, bin_file):
+        with open(bin_file, "wb") as f_bin:
+            f_bin.write(pickle.dumps( self.lista_clientes))
 
-        with open("clientes.bin", "w+b") as archivo:
-            archivo.write(pickle.dump(self.lista_clientes))
+
+########################## CARGAR DESDE ARCHIVO BINARIO #####################
+    
+
+    def cargar_binario(self, bin_file):
+        try:
+            with open(bin_file, "rb") as b_file:
+                self.lista_clientes=pickle.load(b_file)
+        except (FileNotFoundError, EOFError):
+            with open(bin_file,"wb") as b_file:
+                b_file.write(pickle.dumps([]))
