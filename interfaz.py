@@ -3,6 +3,7 @@ import crud_cliente
 import crud_producto
 import crud_pedidos
 import pickle
+from datetime import datetime
 
 
 
@@ -183,15 +184,58 @@ def main():
         #Pedidos
         elif opc == "3":
             gestor_pedido = crud_pedidos.gestorPedido()
+            bin_file = "pedidos.bin"
             opc = mn.menu_pedido()
 
             if opc == "1":
 
                 gestor_cliente.mostrar_clientes()
+                existe = False
+                while not existe:
+                    dni_cliente = input("Ingrese el DNI del cliente que realizo el pedido: ")
 
-                opc_cliente = input("Ingrese el ID del cliente que realizo el pedido: ")
- 
-                gestor_pedido.crear_pedido()
+                    for c in gestor_cliente.lista_clientes:
+                        if dni_cliente == c.dni:
+                            existe = True
+
+                    if existe:
+                        break
+                    else:
+                        print("Error : usuario inexistente")        
+                    
+                    
+                gestor_producto.mostrar_producto()
+
+                productos = []     
+                producto = int(input("Ingresa el producto seleccionado: "))
+                productos.append(gestor_producto.lista_productos[producto])
+
+                while True:
+                    print("1. Agregar otro producto")
+                    print("2. Finalizar compra")
+
+                    opc = input("Seleccionar: ")
+
+                    if opc == "1":
+                        producto = int(input("Ingresa el producto seleccionado: "))
+                        productos.append(gestor_producto.lista_productos[producto])
+                    
+                    elif opc == "2":
+                        break
+
+                    else:
+                        print("ERROR : Opcion invalida")
+
+                if not gestor_pedido.lista_pedidos:
+                    id_pedido = 0
+                else:
+                    id_pedido = len(gestor_pedido.lista_pedidos)-1
+
+                fecha_hoy = datetime.now()
+                fecha_formateada = fecha_hoy.strftime("%d&m%Y")
+                gestor_pedido.crear_pedido(id_pedido, dni_cliente, productos, fecha_formateada)
+                gestor_pedido.sincronizar_binario(bin_file)
+
 
 
         elif opc == "4":

@@ -1,3 +1,6 @@
+import pickle
+from crud_cliente import gestorCliente
+
 class Pedido:
 
 	def __init__(self, id_pedido, productos, cliente, fecha_creacion):
@@ -5,13 +8,9 @@ class Pedido:
 		self.productos = productos
 		self.cliente = cliente
 		self.fecha_creacion = fecha_creacion
-		self.fue_actualizado = False
 
 	def __str__(self):
-		if not fue_actualizado:
 			return f"{self.id_pedido}, {self.productos}, {self.cliente}, {self.fecha_creacion}"
-		else:
-			return f"{self.id_pedido}, {self.productos}, {self.cliente}, {self.fecha_creacion}, {self.fecha_actualizacion}"
 
 class gestorPedido:
 
@@ -39,8 +38,17 @@ class gestorPedido:
 		self.lista_pedidos.pop(index)
 		print("Pedido eliminado extiosamente")
 
+	def sincronizar_binario(self,bin_file):
+		with open(bin_file,"wb") as b_fin:
+			b_fin.write(pickle.dumps(self.lista_productos))
 
-
+	def cargar_binario(self, bin_file):
+		try:
+			with open(bin_file, "rb") as b_file:
+				self.lista_productos=pickle.load(b_file)
+		except (FileNotFoundError, EOFError):
+			with open(bin_file, "wb") as b_file:
+				b_file.write(self.lista_productos)
 
 
 
